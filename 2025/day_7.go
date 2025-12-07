@@ -4,53 +4,46 @@ import (
 	"fmt"
 	"os"
 	s "strings"
-	"slices"
 )
 
 func main() {
-	dat, _ := os.ReadFile("./test_7.txt")
+	dat, _ := os.ReadFile("./input_7.txt")
 	var input string = string(dat)
 
 	splits := s.Split(input, "\n")
 
-	grid := [][]string{}
-	beams := [][2]int{}
-	splitters := map[int][][2]int{}
 	splittersHit := 0
-	endBeams := [][2]int{}
-	start := [2]int{}
+	beamCounters := map[[2]int]int{}
+	paths := 0
 
 	for i := 0; i < len(splits); i++ {
-		row := []string{}
 		for j := 0; j < len(splits[i]); j++ {
-			val := string(splits[i][j])
-			if val == "S" {
-				beams = append(beams, [2]int{i+1,j})
-				start[0] = i
-				start[1] = j
-			} else if val == "^" && slices.Contains(beams, [2]int{i-1,j}) {
-				split := false
-				if !slices.Contains(beams, [2]int{i,j-1}) {
-					beams = append(beams, [2]int{i,j-1})
-					split = true
-				} 
-				if !slices.Contains(beams, [2]int{i,j+1}) {
-					beams = append(beams, [2]int{i,j+1})
-					split = true
-				}
-				if split {
-					splitters[i] = append(splitters[i], [2]int{i,j})
+			lastBeam := [2]int{i-1,j}
+			
+			switch val := string(splits[i][j]); val {
+			case "S":
+				beamCounters[[2]int{i,j}] = 1
+			case "^":
+				if beamCount,ok := beamCounters[lastBeam]; ok {
+					beamCounters[[2]int{i,j+1}] += beamCount
+					beamCounters[[2]int{i,j-1}] += beamCount
 					splittersHit++
 				}
-			} else if val == "." && slices.Contains(beams, [2]int{i-1,j}) {
-				beams = append(beams, [2]int{i,j})
-				if i == len(splits) - 1{
-					endBeams = append(endBeams, [2]int{i,j})
+			case ".":
+				if beamCount,ok := beamCounters[lastBeam]; ok {
+					beamCounters[[2]int{i,j}] += beamCount
 				}
 			}
-			row = append(row, val)
 		}
-		grid = append(grid, row)
+		
+		if i == len(splits)-1 {
+			for b := range beamCounters {
+				if b[0] == i {
+					paths += beamCounters[b]
+				}
+			}
+		}
 	}
 	fmt.Println("Part 1", splittersHit)
+	fmt.Println("Part 2", paths)
 }
