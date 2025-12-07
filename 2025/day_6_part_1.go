@@ -14,7 +14,6 @@ func main() {
 	splits := s.Split(input, "\n")
 
 	grid := [][]int{}
-	grid2 := [][]string{}
 	operators := []string{}
 	for i := 0; i < len(splits); i++ {
 		stringRow := s.Split(splits[i], " ")
@@ -47,7 +46,6 @@ func main() {
 			for i := 0; i < len(grid); i++ {
 				total *= grid[i][o]
 			}
-			fmt.Println(total)
 			sum += total
 		}
 	}
