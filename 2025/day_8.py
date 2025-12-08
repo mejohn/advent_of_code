@@ -20,17 +20,19 @@ for a,b in pairs:
 
 distances = sorted(distances, key=lambda k: k[0])
 circuits = [set([point]) for point in points]
-for d,a,b in distances:
-    found = set()
+for _,a,b in distances:
+    found = {a,b}
     num_circuits = len(circuits)
     to_remove = []
-    for idx,c in enumerate(circuits):
+
+    for c in circuits:
         if a in c or b in c:
             found.update(c)
-            found.update({a,b})
             to_remove.append(c)
+
     for old in to_remove:
         circuits.remove(old)
+
     circuits.append(found)
 
     if len(circuits) <= num_circuits:
