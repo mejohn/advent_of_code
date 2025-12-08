@@ -23,16 +23,21 @@ circuits = [set([point]) for point in points]
 for d,a,b in distances:
     found = set()
     num_circuits = len(circuits)
+    to_remove = []
     for idx,c in enumerate(circuits):
         if a in c or b in c:
-            found.update(circuits.pop(idx))
+            found.update(c)
             found.update({a,b})
+            to_remove.append(c)
+    for old in to_remove:
+        circuits.remove(old)
     circuits.append(found)
+
     if len(circuits) <= num_circuits:
         connections += 1
-    if connections == max_connections: break
-
-
-circuits = sorted(circuits, key=lambda k: -len(k))
-print("Part 1", len(circuits[0])*len(circuits[1])*len(circuits[2]))
-        
+    if connections == max_connections: 
+        circuits = sorted(circuits, key=lambda k: -len(k))
+        print("Part 1", len(circuits[0])*len(circuits[1])*len(circuits[2]))
+    if len(circuits) == 1:
+        print("Part 2", a[0]*b[0])
+        break        
